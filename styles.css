@@ -870,29 +870,40 @@ footer .container-fluid {
     color: #8ed8e8;
 }
 
-/* Responsive styles */
+/* Enhanced Responsive styles */
 @media (max-width: 992px) {
     .controls, .view-toggles {
         justify-content: flex-start;
+        gap: 0.5rem;
     }
     
     .control-group {
         min-width: 100px;
+        flex: 1;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .stat-details {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
     main {
         flex-direction: column;
-        height: auto;
+        height: calc(100vh - 160px);
     }
     
     #map {
-        height: 50vh;
+        height: 60vh;
+        width: 100%;
     }
     
     #sidebar {
-        height: 50vh;
+        height: 40vh;
         max-width: none;
         min-width: 0;
         width: 100%;
@@ -900,55 +911,209 @@ footer .container-fluid {
         border-top: 1px solid var(--border-color);
     }
     
-    .controls, .filter-row {
-        flex-direction: column;
-        align-items: stretch;
+    .controls-container {
+        padding: 0.5rem;
     }
-    
-    .detail-panel, .notification-panel {
+
+    .controls {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .control-group {
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 120px;
+    }
+
+    .filter-row {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .filter-row .control-group {
+        flex: 1 1 calc(50% - 0.5rem);
+    }
+
+    .detail-panel {
+        width: 90%;
+        max-width: none;
+        left: 5%;
+        right: 5%;
+        top: 50%;
+        transform: translateY(-50%);
+        max-height: 80vh;
+    }
+
+    .notification-panel {
         width: 90%;
         left: 5%;
         right: 5%;
+        max-height: 80vh;
     }
-    
+
     .modal-content {
         width: 95%;
-        margin: 10% auto;
+        margin: 2% auto;
+        max-height: 96vh;
     }
-    
-    .history-controls {
-        flex-direction: column;
+
+    .history-controls .row {
+        margin: 0;
     }
-    
+
+    .table-responsive {
+        margin: 0 -0.75rem;
+    }
+
     footer .container-fluid {
         flex-direction: column;
         gap: 0.5rem;
+        text-align: center;
     }
-    
+
+    .data-status {
+        justify-content: center;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+
     .stat-details {
         grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 }
 
 @media (max-width: 576px) {
-    .controls-container {
-        padding: 0.5rem;
+    .navbar-brand {
+        font-size: 1rem;
     }
-    
+
+    .controls-container {
+        padding: 0.25rem;
+    }
+
+    .control-group {
+        flex: 1 1 100%;
+    }
+
     .btn, .form-control, .form-select {
         font-size: 0.85rem;
+        padding: 0.375rem 0.5rem;
     }
-    
+
     .view-toggles {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.25rem;
     }
-    
+
     .view-toggles .btn-link {
-        text-align: left;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
     }
-    
+
     .floating-action-button {
-        bottom: 75px;
+        bottom: 65px;
+        right: 15px;
+    }
+
+    .fab-button {
+        width: 48px;
+        height: 48px;
+    }
+
+    .fab-item {
+        width: 36px;
+        height: 36px;
+    }
+
+    .earthquake-list li {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .notification-item {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .resource-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .resource-icon {
+        margin: 0 auto 0.5rem;
+    }
+
+    .chart-container {
+        height: 200px;
+        padding: 0.5rem;
+    }
+
+    .legend {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+    .btn:hover, .fab-button:hover {
+        transform: none;
+    }
+
+    .earthquake-list li:hover {
+        transform: none;
+    }
+
+    .stat-card:hover {
+        transform: none;
+    }
+
+    .resource-item:hover {
+        transform: none;
+    }
+
+    .fab-menu {
+        opacity: 1;
+        pointer-events: all;
+        transform: none;
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .floating-action-button:hover .fab-menu {
+        transform: none;
+    }
+
+    .floating-action-button:hover .fab-main {
+        transform: none;
+        background-color: var(--accent-color);
+    }
+}
+
+/* Improved dark mode for mobile */
+@media (prefers-color-scheme: dark) {
+    .dark-mode .modal-content,
+    .dark-mode .notification-panel,
+    .dark-mode .detail-panel {
+        background-color: #1a1d20;
+    }
+
+    .dark-mode .form-control,
+    .dark-mode .form-select {
+        background-color: #2c3034;
+        color: #fff;
     }
 } 

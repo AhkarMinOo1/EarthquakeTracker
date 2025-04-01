@@ -73,25 +73,38 @@ const elements = {
 // Initialize map
 function initializeMap() {
     // Create the map centered on Myanmar
-    map = L.map('map').setView([21.9162, 95.9560], 6);
+    map = L.map('map', {
+        zoomControl: false,  // We'll add zoom control in a better position for mobile
+        tap: true,  // Enable tap for mobile
+        bounceAtZoomLimits: false  // Prevent bounce effect at zoom limits
+    }).setView([21.9162, 95.9560], 6);
     
-    // Define map layers
+    // Add zoom control to top-right
+    L.control.zoom({
+        position: 'topright'
+    }).addTo(map);
+    
+    // Define map layers with retina support
     mapLayers = {
         street: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19
+            maxZoom: 19,
+            detectRetina: true
         }),
         satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-            maxZoom: 18
+            maxZoom: 18,
+            detectRetina: true
         }),
         terrain: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png', {
             attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 18
+            maxZoom: 18,
+            detectRetina: true
         }),
         dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            maxZoom: 19
+            maxZoom: 19,
+            detectRetina: true
         })
     };
     
@@ -335,6 +348,103 @@ function setupEventListeners() {
             }
         });
     }
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            map.invalidateSize();
+            adjustUIForOrientation();
+        }, 200);
+    });
+
+    // Handle resize events
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            map.invalidateSize();
+            adjustUIForOrientation();
+        }, 250);
+    });
+
+    // Add touch event handlers for mobile
+    if ('ontouchstart' in window) {
+        setupTouchHandlers();
+    }
+
+    // Handle back button for modals and panels on mobile
+    window.addEventListener('popstate', handleBackButton);
+}
+
+// Adjust UI based on orientation
+function adjustUIForOrientation() {
+    const isMobile = window.innerWidth <= 768;
+    const isLandscape = window.innerWidth > window.innerHeight;
+
+    if (isMobile) {
+        if (isLandscape) {
+            // Optimize for landscape
+            document.getElementById('map').style.height = '70vh';
+            document.getElementById('sidebar').style.height = '30vh';
+        } else {
+            // Optimize for portrait
+            document.getElementById('map').style.height = '60vh';
+            document.getElementById('sidebar').style.height = '40vh';
+        }
+    }
+
+    // Adjust chart sizes
+    if (magnitudeChart) magnitudeChart.resize();
+    if (timeChart) timeChart.resize();
+    if (window.historyChart) window.historyChart.resize();
+}
+
+// Setup touch handlers for mobile
+function setupTouchHandlers() {
+    // Double tap to zoom
+    let lastTap = 0;
+    map.on('click', function(e) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 500 && tapLength > 0) {
+            map.setView(e.latlng, map.getZoom() + 1);
+        }
+        lastTap = currentTime;
+    });
+
+    // Improve touch handling for markers
+    markerClusterGroup.on('click', function(e) {
+        if (e.layer instanceof L.Marker) {
+            const pos = e.layer.getLatLng();
+            map.setView(pos, Math.max(map.getZoom(), 10));
+        }
+    });
+
+    // Add touch feedback to buttons
+    document.querySelectorAll('.btn, .fab-button, .fab-item').forEach(button => {
+        button.addEventListener('touchstart', function() {
+            this.style.opacity = '0.7';
+        });
+        button.addEventListener('touchend', function() {
+            this.style.opacity = '1';
+        });
+    });
+}
+
+// Handle back button for modals and panels
+function handleBackButton(event) {
+    if (elements.detailPanel && !elements.detailPanel.classList.contains('d-none')) {
+        elements.detailPanel.classList.add('d-none');
+        event.preventDefault();
+    }
+    if (elements.historyModal && elements.historyModal.style.display === 'block') {
+        hideHistoryModal();
+        event.preventDefault();
+    }
+    if (elements.notificationPanel && !elements.notificationPanel.classList.contains('d-none')) {
+        elements.notificationPanel.classList.add('d-none');
+        event.preventDefault();
+    }
 }
 
 // Initialize charts for statistics
@@ -394,6 +504,48 @@ function initializeCharts() {
             }
         });
     }
+
+    // Make charts responsive
+    const resizeCharts = () => {
+        if (magnitudeChart) magnitudeChart.resize();
+        if (timeChart) timeChart.resize();
+    };
+
+    // Observe container size changes
+    if (window.ResizeObserver) {
+        const chartContainers = document.querySelectorAll('.chart-container');
+        const resizeObserver = new ResizeObserver(resizeCharts);
+        chartContainers.forEach(container => resizeObserver.observe(container));
+    }
+
+    // Update chart options for better mobile display
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    maxRotation: 45,
+                    minRotation: 45,
+                    autoSkip: true,
+                    maxTicksLimit: window.innerWidth < 576 ? 6 : 12
+                }
+            }
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+        }
+    };
+
+    if (magnitudeChart) magnitudeChart.options = { ...magnitudeChart.options, ...chartOptions };
+    if (timeChart) timeChart.options = { ...timeChart.options, ...chartOptions };
 }
 
 // Fetch and display earthquake data
