@@ -2,462 +2,170 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="description" content="Track earthquakes in Myanmar and worldwide with real-time data visualization">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Myanmar Earthquake Tracker</title>
-    <!-- Updated CDN versions -->
+    <!-- Simplified CDN list -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    <i class="fas fa-globe-asia me-2"></i>Myanmar Earthquake Tracker
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="aboutLink"><i class="fas fa-info-circle me-1"></i>About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="apiDocsLink"><i class="fas fa-code me-1"></i>API Docs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="feedbackLink"><i class="fas fa-comment me-1"></i>Feedback</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-language me-1"></i>Language
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" id="languageSelect">
-                                <li><a class="dropdown-item" data-lang="en">English</a></li>
-                                <li><a class="dropdown-item" data-lang="my">Burmese</a></li>
-                                <li><a class="dropdown-item" data-lang="th">Thai</a></li>
-                                <li><a class="dropdown-item" data-lang="zh">Chinese</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+        <div class="nav-container">
+            <div class="app-title">
+                <i class="fas fa-globe-asia"></i>
+                <h1>Myanmar Earthquake Tracker</h1>
             </div>
-        </nav>
+            
+            <div class="nav-controls">
+                <button id="filterBtn" class="control-btn" title="Filter Data">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <button id="notificationBtn" class="control-btn" title="Enable Notifications">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button id="darkModeToggle" class="control-btn" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <select id="languageSelector" class="control-select">
+                    <option value="en">EN</option>
+                    <option value="my">MY</option>
+                </select>
+            </div>
+        </div>
         
-        <div class="controls-container py-2">
-            <div class="controls">
-                <div class="control-group">
-                    <label for="timeRange"><i class="fas fa-clock me-1"></i>Time Range</label>
-                    <select id="timeRange" class="form-select form-select-sm">
-                        <option value="day">Past Day</option>
+        <div id="filterPanel" class="filter-panel hidden">
+            <div class="filter-header">
+                <h3>Filter Earthquakes</h3>
+                <button id="closeFilterPanel" class="close-btn" aria-label="Close filter panel">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="filter-content">
+                <div class="filter-group">
+                    <label for="countryFilter">Region</label>
+                    <select id="countryFilter" class="filter-select">
+                        <option value="all">All Countries</option>
+                        <option value="myanmar" selected>Myanmar</option>
+                        <option value="thailand">Thailand</option>
+                        <option value="china">China</option>
+                        <option value="india">India</option>
+                        <option value="bangladesh">Bangladesh</option>
+                        <option value="laos">Laos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="timeRange">Time Range</label>
+                    <select id="timeRange" class="filter-select">
+                        <option value="day" selected>Past Day</option>
                         <option value="week">Past Week</option>
                         <option value="month">Past Month</option>
                     </select>
                 </div>
-                <div class="control-group">
-                    <label for="magnitude"><i class="fas fa-ruler me-1"></i>Magnitude</label>
-                    <select id="magnitude" class="form-select form-select-sm">
-                        <option value="all">All Magnitudes</option>
-                        <option value="1">1.0+</option>
-                        <option value="2.5">2.5+</option>
-                        <option value="4.5">4.5+</option>
-                        <option value="significant">Significant</option>
+                <div class="filter-group">
+                    <label for="magnitude">Magnitude</label>
+                    <select id="magnitude" class="filter-select">
+                        <option value="all">All Earthquakes</option>
+                        <option value="2.5" selected>Magnitude 2.5+</option>
+                        <option value="4.5">Magnitude 4.5+</option>
                     </select>
                 </div>
-                <button id="historyBtn" class="btn btn-info btn-sm">
-                    <i class="fas fa-history me-1"></i>Historical Data
+                <button id="applyFilters" class="apply-btn">
+                    <i class="fas fa-check"></i> Apply Filters
                 </button>
-                <button id="refreshBtn" class="btn btn-primary btn-sm">
-                    <i class="fas fa-sync-alt me-1"></i>Refresh Data
-                </button>
-                <button id="notifyBtn" class="btn btn-warning btn-sm">
-                    <i class="fas fa-bell me-1"></i>Enable Notifications
-                </button>
-            </div>
-            
-            <div id="advancedFilters" class="mt-2 d-none">
-                <div class="filter-row">
-                    <div class="control-group">
-                        <label for="minDepth"><i class="fas fa-arrow-down me-1"></i>Min Depth</label>
-                        <input type="number" id="minDepth" min="0" value="0" class="form-control form-control-sm">
-                    </div>
-                    <div class="control-group">
-                        <label for="maxDepth"><i class="fas fa-arrow-up me-1"></i>Max Depth</label>
-                        <input type="number" id="maxDepth" min="0" value="1000" class="form-control form-control-sm">
-                    </div>
-                    <div class="control-group">
-                        <label for="dateRangePicker"><i class="fas fa-calendar-alt me-1"></i>Date Range</label>
-                        <input type="text" id="dateRangePicker" class="form-control form-control-sm">
-                    </div>
-                    <button id="applyFilters" class="btn btn-primary btn-sm">
-                        <i class="fas fa-filter me-1"></i>Apply
-                    </button>
-                    <button id="toggleHeatmap" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-fire me-1"></i>Toggle Heatmap
-                    </button>
-                </div>
-            </div>
-            
-            <div class="view-toggles">
-                <button id="toggleAdvFilters" class="btn btn-link btn-sm">
-                    <i class="fas fa-sliders-h me-1"></i>Advanced Filters
-                </button>
-                <button id="toggleStats" class="btn btn-link btn-sm">
-                    <i class="fas fa-chart-bar me-1"></i>Show Statistics
-                </button>
-                <button id="toggleFullscreen" class="btn btn-link btn-sm">
-                    <i class="fas fa-expand me-1"></i>Fullscreen Map
-                </button>
-                <div class="control-group">
-                    <label for="mapLayerSelect"><i class="fas fa-layer-group me-1"></i>Map Style</label>
-                    <select id="mapLayerSelect" class="form-select form-select-sm">
-                        <option value="street">Street Map</option>
-                        <option value="satellite">Satellite</option>
-                        <option value="terrain">Terrain</option>
-                        <option value="dark">Dark Mode</option>
-                    </select>
-                </div>
             </div>
         </div>
     </header>
     
     <main>
         <div id="map"></div>
-        <div id="sidebar">
-            <ul class="nav nav-tabs" id="sidebarTabs">
-                <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="tab" href="#quakeInfo">
-                        <i class="fas fa-list me-1"></i>Earthquakes
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="tab" href="#statsTab">
-                        <i class="fas fa-chart-pie me-1"></i>Statistics
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="tab" href="#impactTab">
-                        <i class="fas fa-exclamation-triangle me-1"></i>Impact
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="tab" href="#resourcesTab">
-                        <i class="fas fa-ambulance me-1"></i>Resources
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="tab-content p-2">
-                <div class="tab-pane fade show active" id="quakeInfo">
-                    <div class="stats-mini">
-                        <div><i class="fas fa-globe me-1"></i>Total: <span id="totalQuakes" class="badge bg-primary">0</span></div>
-                        <div><i class="fas fa-map-marker-alt me-1"></i>Myanmar: <span id="myanmarQuakes" class="badge bg-info">0</span></div>
-                        <div><i class="fas fa-bolt me-1"></i>Max: M<span id="largestMag" class="badge bg-danger">0</span></div>
-                    </div>
-                    <div class="quake-list">
-                        <h5><i class="fas fa-earthquake me-1"></i>Recent Earthquakes</h5>
-                        <div class="filter-bar">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" id="quakeSearch" placeholder="Search earthquakes..." class="form-control form-control-sm">
-                            </div>
-                            <select id="sortQuakes" class="form-select form-select-sm">
-                                <option value="time">Sort by Time</option>
-                                <option value="magnitude">Sort by Magnitude</option>
-                                <option value="depth">Sort by Depth</option>
-                            </select>
-                        </div>
-                        <ul id="quakeList" class="earthquake-list"></ul>
-                    </div>
+        
+        <div class="info-panel">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">Total</span>
+                    <span class="stat-value" id="totalQuakes">0</span>
                 </div>
-                
-                <div class="tab-pane fade" id="statsTab">
-                    <h5><i class="fas fa-chart-line me-1"></i>Earthquake Statistics</h5>
-                    <div class="chart-container">
-                        <canvas id="magnitudeChart"></canvas>
-                    </div>
-                    <div class="chart-container mt-3">
-                        <canvas id="timeChart"></canvas>
-                    </div>
-                    <div class="stat-details mt-3">
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            <div class="stat-info">
-                                <h6>Average magnitude</h6>
-                                <p id="avgMagnitude">0</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-arrows-alt-v"></i></div>
-                            <div class="stat-info">
-                                <h6>Average depth</h6>
-                                <p><span id="avgDepth">0</span> km</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-map-marked-alt"></i></div>
-                            <div class="stat-info">
-                                <h6>Most active area</h6>
-                                <p id="activeArea">-</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
-                            <div class="stat-info">
-                                <h6>This week</h6>
-                                <p id="weekCount">0</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="exportData" class="btn btn-sm btn-outline-secondary mt-3">
-                        <i class="fas fa-file-download me-1"></i>Export Data (CSV)
-                    </button>
+                <div class="stat-item">
+                    <span class="stat-label">Filtered</span>
+                    <span class="stat-value" id="filteredQuakes">0</span>
                 </div>
-                
-                <div class="tab-pane fade" id="impactTab">
-                    <h5><i class="fas fa-impact me-1"></i>Potential Impact Assessment</h5>
-                    <div id="recentSignificant" class="alert alert-warning d-none">
-                        <strong><i class="fas fa-exclamation-circle me-1"></i>Significant earthquake detected!</strong>
-                        <p id="significantDetails"></p>
-                    </div>
-                    <div class="impact-data">
-                        <h6><i class="fas fa-users me-1"></i>Population Exposure</h6>
-                        <div id="populationImpact" class="impact-card">No significant events to analyze</div>
-                        
-                        <h6 class="mt-3"><i class="fas fa-building me-1"></i>Infrastructure Vulnerability</h6>
-                        <div id="infrastructureImpact" class="impact-card">No significant events to analyze</div>
-                        
-                        <h6 class="mt-3"><i class="fas fa-history me-1"></i>Historical Comparison</h6>
-                        <div id="historicalComparison" class="impact-card">No data available</div>
-                    </div>
+                <div class="stat-item">
+                    <span class="stat-label">Largest</span>
+                    <span class="stat-value" id="largestMag">0</span>
                 </div>
-                
-                <div class="tab-pane fade" id="resourcesTab">
-                    <h5><i class="fas fa-first-aid me-1"></i>Emergency Resources</h5>
-                    <div class="resource-list">
-                        <div class="resource-item">
-                            <div class="resource-icon"><i class="fas fa-phone-alt"></i></div>
-                            <div class="resource-content">
-                                <h6>Myanmar Emergency Services</h6>
-                                <p>Emergency Contact: 191, 192</p>
-                                <p>Red Cross Myanmar: +95 1 383 681</p>
-                            </div>
-                        </div>
-                        
-                        <div class="resource-item">
-                            <div class="resource-icon"><i class="fas fa-shield-alt"></i></div>
-                            <div class="resource-content">
-                                <h6>Earthquake Safety Tips</h6>
-                                <ul>
-                                    <li>Drop, Cover, and Hold On</li>
-                                    <li>Stay away from windows and exterior walls</li>
-                                    <li>If outdoors, move to open areas away from buildings</li>
-                                    <li>Check for injuries and damage after shaking stops</li>
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <div class="resource-item">
-                            <div class="resource-icon"><i class="fas fa-file-pdf"></i></div>
-                            <div class="resource-content">
-                                <h6>Disaster Preparedness</h6>
-                                <p>Download disaster preparedness guides:</p>
-                                <a href="#" class="resource-link"><i class="fas fa-download me-1"></i>Myanmar Earthquake Preparedness Guide</a>
-                                <a href="#" class="resource-link"><i class="fas fa-download me-1"></i>ASEAN Disaster Response Guidelines</a>
-                            </div>
-                        </div>
-                    </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Update</span>
+                    <span class="stat-value" id="lastUpdate">--:--</span>
                 </div>
             </div>
-        </div>
-        
-        <div id="detailPanel" class="detail-panel d-none">
-            <button id="closeDetails" class="close-button">&times;</button>
-            <div id="detailContent"></div>
-            <div id="nearbyQuakes" class="mt-3"></div>
-        </div>
-        
-        <div id="historyModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2><i class="fas fa-history me-2"></i>Historical Earthquake Data</h2>
-                    <span class="close">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <div class="history-controls">
-                        <div class="row g-2">
-                            <div class="col-md-6">
-                                <label for="historyDateRange" class="form-label"><i class="fas fa-calendar-alt me-1"></i>Date Range</label>
-                                <input type="text" id="historyDateRange" placeholder="Select date range" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="historyMinMag" class="form-label"><i class="fas fa-ruler me-1"></i>Min Magnitude</label>
-                                <input type="number" id="historyMinMag" min="0" step="0.1" value="4.0" placeholder="Min magnitude" class="form-control">
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button id="fetchHistoryBtn" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i>Fetch Data</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="historyResults" class="mt-4">
-                        <div class="chart-container">
-                            <canvas id="historyChart"></canvas>
-                        </div>
-                        <div id="historyTable" class="table-responsive mt-4">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Magnitude</th>
-                                        <th>Location</th>
-                                        <th>Depth</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="historyTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="earthquakes-container">
+                <h2>Recent Earthquakes</h2>
+                <ul class="earthquake-list" id="quakeList"></ul>
             </div>
         </div>
     </main>
     
-    <div class="floating-action-button" id="fabMenu">
-        <button class="fab-button fab-main">
-            <i class="fas fa-plus"></i>
+    <div class="detail-panel hidden" id="detailPanel">
+        <button id="closeDetails" class="close-button">
+            <i class="fas fa-times"></i>
         </button>
-        <div class="fab-menu">
-            <button class="fab-item" id="fabRefresh" title="Refresh Data">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-            <button class="fab-item" id="fabFullscreen" title="Toggle Fullscreen">
-                <i class="fas fa-expand"></i>
-            </button>
-            <button class="fab-item" id="fabHeatmap" title="Toggle Heatmap">
-                <i class="fas fa-fire"></i>
-            </button>
-            <button class="fab-item" id="fabShare" title="Share View">
-                <i class="fas fa-share-alt"></i>
-            </button>
-        </div>
+        <div id="detailContent"></div>
     </div>
     
-    <footer>
-        <div class="container-fluid">
-            <p class="mb-0">
-                <i class="fas fa-database me-1"></i>Data provided by USGS Earthquake API | Created to help monitor seismic activity in Myanmar
-            </p>
-            <div class="data-status">
-                <span id="apiStatus" class="badge bg-success">API Online</span>
-                <span id="lastUpdate"></span>
-            </div>
-        </div>
-    </footer>
-    
-    <div id="notificationPanel" class="notification-panel d-none">
-        <div class="notification-header">
-            <h6><i class="fas fa-bell me-1"></i>Earthquake Notifications</h6>
-            <button id="closeNotifications" class="close-button">&times;</button>
-        </div>
-        <div class="notification-settings">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="notifyMyanmarOnly" checked>
-                <label class="form-check-label" for="notifyMyanmarOnly">Myanmar region only</label>
-            </div>
-            <div class="form-group mt-2">
-                <label>Minimum magnitude</label>
-                <div class="d-flex align-items-center">
-                    <input type="range" class="form-range" min="1" max="7" step="0.5" id="notifyMinMag" value="4.5">
-                    <span id="notifyMinMagValue" class="ms-2 badge bg-secondary">4.5</span>
-                </div>
-            </div>
-            <button id="saveNotificationSettings" class="btn btn-primary btn-sm mt-2">
-                <i class="fas fa-save me-1"></i>Save Settings
-            </button>
-        </div>
-        <div id="notificationHistory" class="mt-3">
-            <h6><i class="fas fa-history me-1"></i>Recent Notifications</h6>
-            <div id="notificationList" class="notification-list"></div>
-        </div>
+    <div id="notification-banner" class="notification-banner hidden">
+        <p id="notification-message"></p>
+        <button id="notification-close" class="close-btn">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
     
-    <div id="loadingOverlay" class="loading-overlay d-none">
+    <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="spinner"></div>
         <p>Loading data...</p>
     </div>
     
-    <div id="apiErrorModal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-warning me-2"></i>API Connection Issue</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>We're experiencing difficulties connecting to the USGS Earthquake API. The application will try to use alternative endpoints or cached data.</p>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>This might be due to temporary USGS server issues or network problems.
-                    </div>
-                    <p>Troubleshooting steps:</p>
-                    <ol>
-                        <li>Check your internet connection</li>
-                        <li>Try refreshing the page</li>
-                        <li>The application will automatically attempt to use alternative data sources</li>
-                    </ol>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
-                    <button type="button" class="btn btn-primary" id="retryApiConnection">
-                        <i class="fas fa-sync-alt me-1"></i>Retry Connection
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="dataToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <i class="fas fa-info-circle me-1 text-primary"></i>
-                <strong class="me-auto">Myanmar Earthquake Tracker</strong>
-                <small id="toastTime">just now</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="toastMessage">
-                Data has been refreshed successfully.
-            </div>
-        </div>
-    </div>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // API URLs configuration with fallbacks
+        // API configuration with correct USGS API URL format
         const API_CONFIG = {
             primary: {
                 baseUrl: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/",
                 historical: "https://earthquake.usgs.gov/fdsnws/event/1/query"
             },
             fallback: {
-                baseUrl: "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&",
+                baseUrl: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/",
                 historical: "https://earthquake.usgs.gov/fdsnws/event/1/query"
             }
         };
     </script>
+    <script src="js/ui.js"></script>
+    <script src="js/notifications.js"></script>
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html> 

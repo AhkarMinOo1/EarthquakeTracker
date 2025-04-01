@@ -1,0 +1,30 @@
+{
+  "name": "Myanmar Earthquake Tracker",
+  "short_name": "EQ Tracker",
+  "description": "Track earthquakes in Myanmar and worldwide with real-time data visualization",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c3e50",
+  "orientation": "portrait-primary",
+  "icons": [],
+  "shortcuts": [
+    {
+      "name": "View Recent Earthquakes",
+      "short_name": "Recent",
+      "description": "View earthquakes from the past 24 hours",
+      "url": "/?timeRange=day"
+    },
+    {
+      "name": "View Significant Earthquakes",
+      "short_name": "Significant",
+      "description": "View earthquakes with magnitude 4.5+",
+      "url": "/?magnitude=4.5"
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "categories": ["maps", "utilities", "news"],
+  "gcm_sender_id": "103953800507"
+}

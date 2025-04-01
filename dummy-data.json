@@ -1,0 +1,208 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generated": 1680345600000,
+    "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson",
+    "title": "USGS Magnitude 2.5+ Earthquakes, Past Day",
+    "status": 200,
+    "api": "1.10.3",
+    "count": 5
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 5.2,
+        "place": "25km NW of Mogok, Myanmar",
+        "time": 1680342000000,
+        "updated": 1680342900000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/example1",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/example1.geojson",
+        "felt": 120,
+        "cdi": 4.5,
+        "mmi": 4.2,
+        "alert": "green",
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 432,
+        "net": "us",
+        "code": "example1",
+        "ids": ",us2023abc1,",
+        "sources": ",us,",
+        "types": ",dyfi,moment-tensor,origin,phase-data,",
+        "nst": 114,
+        "dmin": 1.234,
+        "rms": 0.89,
+        "gap": 22,
+        "magType": "mww",
+        "type": "earthquake",
+        "title": "M 5.2 - 25km NW of Mogok, Myanmar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.3148,
+          22.9812,
+          25.6
+        ]
+      },
+      "id": "us2023abc1"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 3.7,
+        "place": "15km SE of Lashio, Myanmar",
+        "time": 1680332100000,
+        "updated": 1680333000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/example2",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/example2.geojson",
+        "felt": 45,
+        "cdi": 3.2,
+        "mmi": 3.0,
+        "alert": "green",
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 210,
+        "net": "us",
+        "code": "example2",
+        "ids": ",us2023abc2,",
+        "sources": ",us,",
+        "types": ",dyfi,origin,phase-data,",
+        "nst": 87,
+        "dmin": 0.987,
+        "rms": 0.76,
+        "gap": 34,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 3.7 - 15km SE of Lashio, Myanmar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          97.8511,
+          22.8756,
+          12.3
+        ]
+      },
+      "id": "us2023abc2"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 2.9,
+        "place": "10km W of Mandalay, Myanmar",
+        "time": 1680325000000,
+        "updated": 1680326000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/example3",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/example3.geojson",
+        "felt": 18,
+        "cdi": 2.1,
+        "mmi": 1.8,
+        "alert": null,
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 129,
+        "net": "us",
+        "code": "example3",
+        "ids": ",us2023abc3,",
+        "sources": ",us,",
+        "types": ",dyfi,origin,phase-data,",
+        "nst": 65,
+        "dmin": 0.543,
+        "rms": 0.54,
+        "gap": 42,
+        "magType": "ml",
+        "type": "earthquake",
+        "title": "M 2.9 - 10km W of Mandalay, Myanmar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.0351,
+          21.9756,
+          8.7
+        ]
+      },
+      "id": "us2023abc3"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 4.6,
+        "place": "35km NE of Taunggyi, Myanmar",
+        "time": 1680318000000,
+        "updated": 1680319000000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/example4",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/example4.geojson",
+        "felt": 72,
+        "cdi": 3.8,
+        "mmi": 3.5,
+        "alert": "green",
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 325,
+        "net": "us",
+        "code": "example4",
+        "ids": ",us2023abc4,",
+        "sources": ",us,",
+        "types": ",dyfi,moment-tensor,origin,phase-data,",
+        "nst": 98,
+        "dmin": 1.098,
+        "rms": 0.81,
+        "gap": 28,
+        "magType": "mww",
+        "type": "earthquake",
+        "title": "M 4.6 - 35km NE of Taunggyi, Myanmar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          97.1243,
+          21.1436,
+          18.2
+        ]
+      },
+      "id": "us2023abc4"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 6.1,
+        "place": "42km SE of Yangon, Myanmar",
+        "time": 1680310800000,
+        "updated": 1680311700000,
+        "url": "https://earthquake.usgs.gov/earthquakes/eventpage/example5",
+        "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/example5.geojson",
+        "felt": 235,
+        "cdi": 5.8,
+        "mmi": 5.5,
+        "alert": "yellow",
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 587,
+        "net": "us",
+        "code": "example5",
+        "ids": ",us2023abc5,",
+        "sources": ",us,",
+        "types": ",dyfi,moment-tensor,origin,phase-data,shakemap,",
+        "nst": 142,
+        "dmin": 1.345,
+        "rms": 0.92,
+        "gap": 15,
+        "magType": "mww",
+        "type": "earthquake",
+        "title": "M 6.1 - 42km SE of Yangon, Myanmar"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.5124,
+          16.7246,
+          22.4
+        ]
+      },
+      "id": "us2023abc5"
+    }
+  ]
+}
